@@ -1,14 +1,3 @@
-$('.an-input').each(function(){
-        $(this).on('blur', function(){
-            if($(this).val().trim() != "") {
-                $(this).addClass('hasvalue');
-            }
-            else {
-                $(this).removeClass('hasvalue');
-            }
-        })    
-    })
-
 $('form').on('submit', function(e) {
 	e.preventDefault();
 
@@ -22,8 +11,18 @@ $('form').on('submit', function(e) {
 			else alert(data.message);
 		},
 		error: function(xhr, err) {
-			alert('see console for error');
 			console.log(err);     
 		}
 	});
+});
+
+$('.an-input').each(function(){
+    $(this).on('blur', function(){
+        if($(this).val().trim() != "") {
+            $(this).addClass('hasvalue');
+        }
+        else {
+            $(this).removeClass('hasvalue');
+        }
+    })    
 });

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>The Girl Code</title>
+	<link rel="shortcut icon" type="image/png" href="/favicon.png"/>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/level.css">
+	<!-- Create a simple CodeMirror instance -->
+	<link rel="stylesheet" href="/stylesheets/codemirror.css">
+	<script src="/lib/codemirror.js"></script>
+	<script src="/lib/javascript.js"></script>
+	<script   src="https://code.jquery.com/jquery-3.3.1.min.js"   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://use.typekit.net/pme3yyf.css">
+</head>
+<body>
+	<div class="question">
+		<div class="nav">
+			<a href='/levels/{{prevLevel}}' style="padding-right: 7rem;">{{#prevLevel}}&larr; Previous{{/prevLevel}}</a>
+			<a href='/levels/{{nextLevel}}'>Next &rarr;</a>
+		</div>
+		<br>
+		<span class="breadcrumbs"><a href="/dashboard">Dashboard</a> ❯</span>
+		<form method="post" class="submit">
+			{{> levelText}}
+		</form>
+		<div class="eve-container">
+			<img src="/img/blinky-eve.gif" alt="Eve" class="happy-eve" draggable="false">
+			<img src="/img/sad-eve.png" alt="Sad Eve" class="sad-eve hidden draggable="false">
+		</div>
+	</div>
+
+
+	<div class="coding">
+		<form method="post" action="/levels/compiler" class="compiler">
+			<div class="output-container">
+				<pre data-heading="TERMINAL" class="cmdline"><code class="stdout"></code></pre>
+			</div>
+			<input class="stdin" placeholder="Send input to program...">
+		</form>
+
+
+	</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="/javascripts/cmd.js"></script>
+</body>
+</html>

@@ -1,17 +1,56 @@
+var Person = function() {
+	var sad = $('.sad-eve'),
+		happy = $('.happy-eve');
+
+	this.happy = function() {
+		sad.addClass('hidden');
+		happy.removeClass('hidden');
+	};
+
+	this.sad = function() {
+		sad.removeClass('hidden');
+		happy.addClass('hidden');
+	};
+
+	this.say = function(str) {
+		var x = $('<div>');
+		x.html(str);
+		x.addClass('bubble');
+		x.insertBefore('.happy-eve');
+		setTimeout(function() {
+			x.fadeOut(300, function() {
+				x.remove();
+			});
+		}, 5500);
+		$('.question').animate({
+			scrollTop: happy.offset.top
+		}, 400);
+	}
+};
+
+var Eve = new Person();
+
 $('form.submit').on('submit', function(e) {
 	e.preventDefault();
 
 	$.ajax({
 		url: location.href,
 		type: $(this).attr('method'),
-		data: $(this).serialize(),
+		data: {
+			answer: $('form.compiler textarea').val()
+		},
 		success: function(data) {
+			$('form.compiler button').prop('disabled', false);
 			if(data.message == 'win') {
-				alert('correct answer!');
-				location.href = '/dashboard';
+				Eve.say('Correct answer,<br>well done!');
+				//Eve.happy();
 			}
 			else if(data.message == 'lose') {
-				alert('incorrect answer!');
+				Eve.say('Incorrect answer,<br>try again!');
+				/*Eve.sad();
+				setTimeout(function() {
+					Eve.happy();
+				}, 5000);*/
 			}
 			else if(data.message == 'logout') {
 				alert('please log in again');
@@ -20,35 +59,55 @@ $('form.submit').on('submit', function(e) {
 			else alert(data.message);
 		},
 		error: function(xhr, err) {
+			$('form.compiler button').prop('disabled', false);
 			alert('see console for error');
 			console.log(err);     
 		}
 	});
 });
 
+function escapeHTML(unsafe) {
+	return unsafe
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+}
+
 function out(text) {
-	$('.stdout').html($('.stdout').text() + text);
+	$('.stdout').html($('.stdout').html() + escapeHTML(text));
 }
 
 function err(text) {
-	$('.stderr').html($('.stderr').text() + text);
+	$('.stdout').html($('.stdout').html() + '<em>' + escapeHTML(text) + '</em>');
 }
 
-$('form.compiler').on('submit', function(e) {
+$('form.compiler button.submit').on('click', function(e) {
 	e.preventDefault();
 
-	var socket = io.connect('/');
+	$('form.compiler button').prop('disabled', true);
+
+	$('form.submit').submit();
+});
+
+$('form.compiler button.run').on('click', function(e) {
+	e.preventDefault();
+
+	$('form.compiler button').prop('disabled', true);
+
+	var socket = io.connect('/', { 'sync disconnect on unload': true });
 
 	$('.stdout').html('');
-	$('.stderr').html('');
 
-	socket.emit('code', $(this).find('textarea').val());
+	socket.emit('code', $('form.compiler').find('textarea').val());
 
 	socket.on('stdout', function(data) {
 		out(data);
 	});
 
 	socket.on('stderr', function(data) {
+		console.log(data);
 		err(data);
 	});
 
@@ -66,5 +125,19 @@ $('form.compiler').on('submit', function(e) {
 		err(data);
 		$('.stdin').off('keypress');
 		socket.disconnect();
+		$('form.compiler button').prop('disabled', false);
 	});
+});
+
+$(document).ready(function () {
+	var MastStory = function () {
+		$('[id^="p"]').each(function() {
+			$(this).addClass('hidden');
+		});
+		$('[id^="w"]').on('click', function() {
+			var n = $(this).attr('id').replace('w', '');
+			$('#p' + n).toggleClass('hidden');
+		});
+	};
+	MastStory();
 });
